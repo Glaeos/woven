@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class AsyncLog {
 
     private static final AtomicInteger GLASS_THREADS = new AtomicInteger();
+    private static final AtomicInteger ASYNC_LINES = new AtomicInteger();
 
     private static final AtomicBoolean LOG_LOADS = new AtomicBoolean(true);
     private static final AtomicBoolean LOG_PLAYER_PHASE = new AtomicBoolean(true);
@@ -31,6 +32,18 @@ public final class AsyncLog {
 
     public static void glassThreadDying() {
         GLASS_THREADS.decrementAndGet();
+    }
+
+    public static int getAsyncLineCount() {
+        return ASYNC_LINES.get();
+    }
+
+    public static void asyncLineAlive() {
+        ASYNC_LINES.incrementAndGet();
+    }
+
+    public static void asyncLineDying() {
+        ASYNC_LINES.decrementAndGet();
     }
 
     public static boolean logLoads() {
@@ -65,20 +78,20 @@ public final class AsyncLog {
         return ASYNC_LOG_BLOCKS.contains(pos);
     }
 
-    public static boolean start(ChunkPos chunkPos) {
-        return ASYNC_LOG_CHUNKS.add(chunkPos);
+    public static boolean start(ChunkPos pos) {
+        return ASYNC_LOG_CHUNKS.add(pos);
     }
 
-    public static boolean stop(ChunkPos chunkPos) {
-        return ASYNC_LOG_CHUNKS.remove(chunkPos);
+    public static boolean stop(ChunkPos pos) {
+        return ASYNC_LOG_CHUNKS.remove(pos);
     }
 
-    public static boolean start(BlockPos blockPos) {
-        return ASYNC_LOG_BLOCKS.add(blockPos);
+    public static boolean start(BlockPos pos) {
+        return ASYNC_LOG_BLOCKS.add(pos);
     }
 
-    public static boolean stop(BlockPos blockPos) {
-        return ASYNC_LOG_BLOCKS.remove(blockPos);
+    public static boolean stop(BlockPos pos) {
+        return ASYNC_LOG_BLOCKS.remove(pos);
     }
 
     public static boolean log(BlockPos pos) {

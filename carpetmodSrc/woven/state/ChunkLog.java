@@ -28,12 +28,12 @@ public class ChunkLog {
         return LOG_CHUNKS.contains(pos);
     }
 
-    public static boolean start(ChunkPos chunkPos) {
-        return LOG_CHUNKS.add(chunkPos);
+    public static boolean start(ChunkPos pos) {
+        return LOG_CHUNKS.add(pos);
     }
 
-    public static boolean stop(ChunkPos chunkPos) {
-        return LOG_CHUNKS.remove(chunkPos);
+    public static boolean stop(ChunkPos pos) {
+        return LOG_CHUNKS.remove(pos);
     }
 
     public static boolean log(ChunkPos pos) {

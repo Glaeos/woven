@@ -3,6 +3,7 @@ package carpet.commands;
 import carpet.CarpetServer;
 import woven.commands.CommandAsyncLog;
 import woven.commands.CommandChunkLog;
+import woven.commands.CommandRedstoneLog;
 import woven.commands.CommandWoven;
 import narcolepticfrog.rsmm.MeterCommand;
 import net.minecraft.command.CommandHandler;
@@ -64,5 +65,6 @@ public class CarpetCommands {
         handler.registerCommand(new CommandWoven());
         handler.registerCommand(new CommandAsyncLog());
         handler.registerCommand(new CommandChunkLog());
+        handler.registerCommand(new CommandRedstoneLog());
     }
 }

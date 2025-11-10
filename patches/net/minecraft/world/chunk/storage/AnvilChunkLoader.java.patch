@@ -225,12 +225,12 @@
          p_75820_3_.func_74772_a("LastUpdate", p_75820_2_.func_82737_E());
 +
 +        // WOVEN
-+        if (ChunkState.ungenerateChunk(p_75820_1_.func_76632_l())) {
++        if (ChunkState.willUngenerateChunk(p_75820_1_.func_76632_l())) {
 +            ChunkState.dropChunk(p_75820_1_.func_76632_l());
 +            return;
 +        }
 +
-+        if (ChunkState.unpopChunk(p_75820_1_.func_76632_l())) {
++        if (ChunkState.willUnpopChunk(p_75820_1_.func_76632_l())) {
 +            ChunkState.dropChunk(p_75820_1_.func_76632_l());
 +            p_75820_3_.func_74757_a("TerrainPopulated", false);
 +            p_75820_3_.func_74757_a("LightPopulated", false);

@@ -118,7 +118,7 @@ public class CommandWoven extends CommandCarpetBase {
 
                 break;
 
-            case "logRedstoneDust":
+            case "logredstonedust":
                 if (args.length < 2) {
                     notifyCommandListener(sender, this, "Redstone dust logging is currently "
                             + (RedstoneLog.logDust() ? "enabled" : "disabled"));

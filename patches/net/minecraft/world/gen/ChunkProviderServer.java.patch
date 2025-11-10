@@ -97,17 +97,22 @@
              chunk.field_189550_d = false;
          }
  
-@@ -89,13 +135,39 @@
+@@ -89,14 +135,51 @@
  
          if (chunk == null)
          {
 +            // WOVEN
-+            Woven.chatIf(!field_73251_h.func_152345_ab() && AsyncLog.logLoads(),
-+                            "[" + Thread.currentThread().getName() + "] ")
-+                    .color(TextFormatting.RED)
-+                    .append("** Async chunk load at " + p_186028_1_ + ", " + p_186028_2_ + " **")
-+                    .color(TextFormatting.DARK_GREEN)
-+                    .broadcast(field_73251_h);
++            boolean async = !field_73251_h.func_152345_ab();
++            if (async) {
++                AsyncLog.asyncLineAlive();
++                Woven.chatIf(AsyncLog.logLoads(),
++                                "[" + Thread.currentThread().getName()
++                                        .replace("Downloader ", "") + "] ")
++                        .color(TextFormatting.RED)
++                        .append("Async chunk load at " + p_186028_1_ + ", " + p_186028_2_ + " GT" + Woven.getTick(field_73251_h))
++                        .color(TextFormatting.DARK_GREEN)
++                        .broadcast(field_73251_h);
++            }
 +            // WOVEN END
 +
              chunk = this.func_73239_e(p_186028_1_, p_186028_2_);
@@ -135,9 +140,16 @@
                  chunk.func_186030_a(this, this.field_186029_c);
 +                carpet.carpetclient.CarpetClientChunkLogger.resetToOldReason();
              }
++
++            // WOVEN
++            if (async) {
++                AsyncLog.asyncLineDying();
++            }
++            // WOVEN END
          }
  
-@@ -113,6 +185,11 @@
+         return chunk;
+@@ -113,6 +196,11 @@
              try
              {
                  chunk = this.field_186029_c.func_185932_a(p_186025_1_, p_186025_2_);
@@ -149,7 +161,7 @@
              }
              catch (Throwable throwable)
              {
-@@ -123,7 +200,7 @@
+@@ -123,7 +211,7 @@
                  crashreportcategory.func_71507_a("Generator", this.field_186029_c);
                  throw new ReportedException(crashreport);
              }
@@ -158,7 +170,7 @@
              this.field_73244_f.put(i, chunk);
              chunk.func_76631_c();
              chunk.func_186030_a(this, this.field_186029_c);
-@@ -185,6 +262,8 @@
+@@ -185,6 +273,8 @@
  
      public boolean func_186027_a(boolean p_186027_1_)
      {
@@ -167,7 +179,7 @@
          int i = 0;
          List<Chunk> list = Lists.newArrayList(this.field_73244_f.values());
  
-@@ -222,8 +301,12 @@
+@@ -222,8 +312,12 @@
      {
          if (!this.field_73251_h.field_73058_d)
          {
@@ -181,7 +193,7 @@
                  Iterator<Long> iterator = this.field_73248_b.iterator();
  
                  for (int i = 0; i < 100 && iterator.hasNext(); iterator.remove())
-@@ -231,16 +314,47 @@
+@@ -231,16 +325,47 @@
                      Long olong = iterator.next();
                      Chunk chunk = (Chunk)this.field_73244_f.get(olong);
  
@@ -230,7 +242,7 @@
  
              this.field_73247_e.func_75817_a();
          }
-@@ -283,9 +397,17 @@
+@@ -283,9 +408,17 @@
      {
          return this.field_73244_f.containsKey(ChunkPos.func_77272_a(p_73149_1_, p_73149_2_));
      }
