@@ -16,6 +16,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.gen.IChunkGenerator;
+import woven.state.ChunkState;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -29,7 +30,7 @@ public class CommandChunk extends CommandCarpetBase
 
     public String getUsage(ICommandSender sender)
     {
-        return "Usage: chunk <load | info | unload | regen | repop | asyncrepop> <X> <Z>";
+        return "Usage: chunk <load | info | unload | regen | repop | ungen | unpop | asyncrepop> <X> <Z>";
     }
 
     public String getName()
@@ -67,6 +68,12 @@ public class CommandChunk extends CommandCarpetBase
                     return;
                 case "repop":
                     repop(sender, chunkX, chunkZ);
+                    return;
+                case "ungen":
+                    ungen(sender, chunkX, chunkZ);
+                    return;
+                case "unpop":
+                    unpop(sender, chunkX, chunkZ);
                     return;
                 case "asyncrepop":
                     asyncrepop(sender, chunkX, chunkZ);
@@ -119,6 +126,30 @@ public class CommandChunk extends CommandCarpetBase
         Chunk chunk = chunkProvider.loadChunk(x, z);
         chunk.setUnpopulated();
         chunk.populate(chunkProvider, chunkGenerator);
+    }
+
+    private void ungen(ICommandSender sender, int x, int z) {
+        if (!world.isChunkLoaded(x, z, false)) {
+            sender.sendMessage(new TextComponentString(("Chunk is not loaded")));
+        }
+
+        if (ChunkState.ungenerateChunk(new ChunkPos(x, z))) {
+            sender.sendMessage(new TextComponentString(("Chunk marked for ungeneration")));
+        } else {
+            sender.sendMessage(new TextComponentString(("Chunk already marked for ungeneration")));
+        }
+    }
+
+    private void unpop(ICommandSender sender, int x, int z) {
+        if (!world.isChunkLoaded(x, z, false)) {
+            sender.sendMessage(new TextComponentString(("Chunk is not loaded")));
+        }
+
+        if (ChunkState.unpopChunk(new ChunkPos(x, z))) {
+            sender.sendMessage(new TextComponentString(("Chunk marked for unpopulation")));
+        } else {
+            sender.sendMessage(new TextComponentString(("Chunk already marked for unpopulation")));
+        }
     }
 
     private void asyncrepop(ICommandSender sender, int x, int z) {

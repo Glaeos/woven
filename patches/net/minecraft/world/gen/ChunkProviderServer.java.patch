@@ -1,6 +1,14 @@
 --- ../src-base/minecraft/net/minecraft/world/gen/ChunkProviderServer.java
 +++ ../src-work/minecraft/net/minecraft/world/gen/ChunkProviderServer.java
-@@ -27,15 +27,26 @@
+@@ -17,6 +17,7 @@
+ import net.minecraft.util.ReportedException;
+ import net.minecraft.util.math.BlockPos;
+ import net.minecraft.util.math.ChunkPos;
++import net.minecraft.util.text.TextFormatting;
+ import net.minecraft.world.MinecraftException;
+ import net.minecraft.world.World;
+ import net.minecraft.world.WorldServer;
+@@ -27,15 +28,29 @@
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  
@@ -11,6 +19,9 @@
 +import carpet.utils.UnloadOrder;
 +import net.minecraft.entity.Entity;
 +import net.minecraft.server.management.PlayerChunkMapEntry;
++import woven.Woven;
++import woven.state.AsyncLog;
++import woven.state.ChunkLog;
 +
  public class ChunkProviderServer implements IChunkProvider
  {
@@ -31,7 +42,7 @@
      public ChunkProviderServer(WorldServer p_i46838_1_, IChunkLoader p_i46838_2_, IChunkGenerator p_i46838_3_)
      {
          this.field_73251_h = p_i46838_1_;
-@@ -50,8 +61,18 @@
+@@ -50,15 +65,33 @@
  
      public void func_189549_a(Chunk p_189549_1_)
      {
@@ -49,9 +60,16 @@
 +            }
 +        	
              this.field_73248_b.add(Long.valueOf(ChunkPos.func_77272_a(p_189549_1_.field_76635_g, p_189549_1_.field_76647_h)));
++            // WOVEN
++            ChunkPos pos = p_189549_1_.func_76632_l();
++            Woven.chatIf(ChunkLog.log(pos), "[" + Woven.toString(pos) + "] UNLOAD QUEUED GT"
++                            + Woven.getTick(field_73251_h))
++                    .color(TextFormatting.YELLOW)
++                    .broadcast(field_73251_h);
++            // WOVEN END
              p_189549_1_.field_189550_d = true;
          }
-@@ -59,6 +80,7 @@
+     }
  
      public void func_73240_a()
      {
@@ -59,7 +77,7 @@
          ObjectIterator objectiterator = this.field_73244_f.values().iterator();
  
          while (objectiterator.hasNext())
-@@ -76,6 +98,11 @@
+@@ -76,6 +109,19 @@
  
          if (chunk != null)
          {
@@ -67,11 +85,32 @@
 +        	if(CarpetClientChunkLogger.logger.enabled && chunk.field_189550_d) {
 +        		CarpetClientChunkLogger.logger.log(this.field_73251_h,p_186026_1_,p_186026_2_,CarpetClientChunkLogger.Event.CANCEL_UNLOAD);
 +        	}
-+        	
++
++            // WOVEN
++            ChunkPos pos = new ChunkPos(p_186026_1_, p_186026_2_);
++            Woven.chatIf(chunk.field_189550_d && ChunkLog.log(pos),
++                            "[" + Woven.toString(pos) + "] UNLOAD CANCELLED GT"
++                            + Woven.getTick(field_73251_h))
++                    .color(TextFormatting.DARK_BLUE)
++                    .broadcast(field_73251_h);
++            // WOVEN END
              chunk.field_189550_d = false;
          }
  
-@@ -93,9 +120,26 @@
+@@ -89,13 +135,39 @@
+ 
+         if (chunk == null)
+         {
++            // WOVEN
++            Woven.chatIf(!field_73251_h.func_152345_ab() && AsyncLog.logLoads(),
++                            "[" + Thread.currentThread().getName() + "] ")
++                    .color(TextFormatting.RED)
++                    .append("** Async chunk load at " + p_186028_1_ + ", " + p_186028_2_ + " **")
++                    .color(TextFormatting.DARK_GREEN)
++                    .broadcast(field_73251_h);
++            // WOVEN END
++
+             chunk = this.func_73239_e(p_186028_1_, p_186028_2_);
  
              if (chunk != null)
              {
@@ -98,7 +137,7 @@
              }
          }
  
-@@ -113,6 +157,11 @@
+@@ -113,6 +185,11 @@
              try
              {
                  chunk = this.field_186029_c.func_185932_a(p_186025_1_, p_186025_2_);
@@ -110,7 +149,7 @@
              }
              catch (Throwable throwable)
              {
-@@ -123,7 +172,7 @@
+@@ -123,7 +200,7 @@
                  crashreportcategory.func_71507_a("Generator", this.field_186029_c);
                  throw new ReportedException(crashreport);
              }
@@ -119,7 +158,7 @@
              this.field_73244_f.put(i, chunk);
              chunk.func_76631_c();
              chunk.func_186030_a(this, this.field_186029_c);
-@@ -185,6 +234,8 @@
+@@ -185,6 +262,8 @@
  
      public boolean func_186027_a(boolean p_186027_1_)
      {
@@ -128,7 +167,7 @@
          int i = 0;
          List<Chunk> list = Lists.newArrayList(this.field_73244_f.values());
  
-@@ -222,8 +273,12 @@
+@@ -222,8 +301,12 @@
      {
          if (!this.field_73251_h.field_73058_d)
          {
@@ -142,7 +181,7 @@
                  Iterator<Long> iterator = this.field_73248_b.iterator();
  
                  for (int i = 0; i < 100 && iterator.hasNext(); iterator.remove())
-@@ -231,16 +286,47 @@
+@@ -231,16 +314,47 @@
                      Long olong = iterator.next();
                      Chunk chunk = (Chunk)this.field_73244_f.get(olong);
  
@@ -191,7 +230,7 @@
  
              this.field_73247_e.func_75817_a();
          }
-@@ -283,9 +369,17 @@
+@@ -283,9 +397,17 @@
      {
          return this.field_73244_f.containsKey(ChunkPos.func_77272_a(p_73149_1_, p_73149_2_));
      }

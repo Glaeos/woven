@@ -1,15 +1,30 @@
 --- ../src-base/minecraft/net/minecraft/block/BlockBeacon.java
 +++ ../src-work/minecraft/net/minecraft/block/BlockBeacon.java
-@@ -20,6 +20,8 @@
+@@ -8,6 +8,7 @@
+ import net.minecraft.entity.player.EntityPlayer;
+ import net.minecraft.init.Blocks;
+ import net.minecraft.item.ItemStack;
++import net.minecraft.server.MinecraftServer;
+ import net.minecraft.stats.StatList;
+ import net.minecraft.tileentity.TileEntity;
+ import net.minecraft.tileentity.TileEntityBeacon;
+@@ -16,10 +17,15 @@
+ import net.minecraft.util.EnumHand;
+ import net.minecraft.util.HttpUtil;
+ import net.minecraft.util.math.BlockPos;
++import net.minecraft.util.text.*;
+ import net.minecraft.world.World;
  import net.minecraft.world.WorldServer;
  import net.minecraft.world.chunk.Chunk;
  
 +import carpet.CarpetSettings;
++import woven.Woven;
++import woven.state.AsyncLog;
 +
  public class BlockBeacon extends BlockContainer
  {
      public BlockBeacon()
-@@ -93,6 +95,19 @@
+@@ -93,6 +99,19 @@
              ((TileEntityBeacon)tileentity).func_174908_m();
              p_189540_2_.func_175641_c(p_189540_3_, this, 1, 0);
          }
@@ -29,3 +44,71 @@
      }
  
      public static void func_176450_d(final World p_176450_0_, final BlockPos p_176450_1_)
+@@ -101,6 +120,20 @@
+         {
+             public void run()
+             {
++                // WOVEN
++                AsyncLog.glassThreadAlive();
++                boolean LOG = AsyncLog.log(p_176450_1_);
++                String threadPrefix = "[" + Thread.currentThread().getName()
++                        .replaceFirst("Downloader ", "") + "] ";
++
++                Woven.chatIf(LOG, threadPrefix)
++                        .color(TextFormatting.RED)
++                        .append("Glass thread at " + Woven.toString(p_176450_1_)
++                                + " started GT" + Woven.getTick(p_176450_0_))
++                        .color(TextFormatting.GREEN)
++                        .broadcast(p_176450_0_);
++                // WOVEN END
++
+                 Chunk chunk = p_176450_0_.func_175726_f(p_176450_1_);
+ 
+                 for (int i = p_176450_1_.func_177956_o() - 1; i >= 0; --i)
+@@ -112,10 +145,30 @@
+                         break;
+                     }
+ 
++                    // WOVEN
++                    Woven.chatIf(LOG, threadPrefix)
++                            .color(TextFormatting.RED)
++                            .append("Glass thread fetching " + Woven.toString(blockpos)
++                                    + " GT" + Woven.getTick(p_176450_0_))
++                            .color(TextFormatting.BLUE)
++                            .italic()
++                            .broadcast(p_176450_0_);
++                    // WOVEN END
++
+                     IBlockState iblockstate = p_176450_0_.func_180495_p(blockpos);
+ 
+                     if (iblockstate.func_177230_c() == Blocks.field_150461_bJ)
+                     {
++                        // WOVEN
++                        Woven.chatIf(LOG, threadPrefix)
++                                .color(TextFormatting.RED)
++                                .append("Glass thread scheduling " + Woven.toString(blockpos)
++                                        + " GT" + Woven.getTick(p_176450_0_))
++                                .color(TextFormatting.YELLOW)
++                                .italic()
++                                .broadcast(p_176450_0_);
++                        // WOVEN END
++
+                         ((WorldServer)p_176450_0_).func_152344_a(new Runnable()
+                         {
+                             public void run()
+@@ -131,6 +184,15 @@
+                         });
+                     }
+                 }
++
++                // WOVEN
++                AsyncLog.glassThreadDying();
++                Woven.chatIf(LOG, threadPrefix)
++                        .color(TextFormatting.RED)
++                        .append("Glass thread dying GT" + Woven.getTick(p_176450_0_))
++                        .color(TextFormatting.DARK_RED)
++                        .broadcast(p_176450_0_);
++                // WOVEN END
+             }
+         });
+     }

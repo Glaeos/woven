@@ -1,6 +1,9 @@
 package carpet.commands;
 
 import carpet.CarpetServer;
+import woven.commands.CommandAsyncLog;
+import woven.commands.CommandChunkLog;
+import woven.commands.CommandWoven;
 import narcolepticfrog.rsmm.MeterCommand;
 import net.minecraft.command.CommandHandler;
 import redstone.multimeter.command.MeterGroupCommand;
@@ -56,5 +59,10 @@ public class CarpetCommands {
         // ----- RSMM End ----- //
 
         handler.registerCommand(new MeterGroupCommand(CarpetServer.rsmmServer));
+
+        // Woven
+        handler.registerCommand(new CommandWoven());
+        handler.registerCommand(new CommandAsyncLog());
+        handler.registerCommand(new CommandChunkLog());
     }
 }
